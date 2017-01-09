@@ -6,6 +6,7 @@ app.use('/', express.static(path.join(__dirname, 'public')));
 app.get('/',(req, res) => { res.redirect('/static/index.html'); });
 app.get('/:query', function(req, res) {
   var query = req.params.query;
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   var dateCheck = {
     unix: function(query) {
@@ -17,7 +18,11 @@ app.get('/:query', function(req, res) {
       return isCorrectLength && isIntegerSequence;
     },
     natLang: function(query) {
-      return true;
+      var queryComponents = decodeURI(query).replace(',', ' ').split(' ').filter((e) => { return e.length !== 0; });
+      var hasMonth = months.some((e) => { return e === queryComponents[0]; });
+      var hasDate = queryComponents[1].length === 2;
+      var hasYear = queryComponents[2].length === 4;
+      return hasMonth && hasDate && hasYear;
     },
   };
 
@@ -25,7 +30,6 @@ app.get('/:query', function(req, res) {
     unixToNatLang: function(query) {
       var natural = "";
       var date = new Date(+query * 1000);
-      var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       natural += months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
       return natural;
     },
