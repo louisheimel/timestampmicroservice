@@ -19,9 +19,15 @@ app.get('/:query', function(req, res) {
     },
     natLang: function(query) {
       var queryComponents = decodeURI(query).replace(',', ' ').split(' ').filter((e) => { return e.length !== 0; });
-      var hasMonth = months.some((e) => { return e === queryComponents[0]; });
-      var hasDate = queryComponents[1].length === 2;
-      var hasYear = queryComponents[2].length === 4;
+ 
+      try {
+        var hasMonth = months.some((e) => { return e === queryComponents[0]; });
+        var hasDate = queryComponents[1].length === 2;
+        var hasYear = queryComponents[2].length === 4;
+      }
+      catch(e) {
+        return false;
+      }
       return hasMonth && hasDate && hasYear;
     },
   };
