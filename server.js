@@ -2,27 +2,27 @@ var express = require('express');
 var app = express();
 var path = require('path');
 
-// add a comment
-app.use('/', express.static(path.join(__dirname, 'public')));
-app.get('/',(req, res) => { res.redirect('/static/index.html'); });
+app.use(express.static(path.join(__dirname, 'public')));
 app.get('/:query', function(req, res) {
   var query = req.params.query;
+  console.log('query is: ' + query)
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   var dateCheck = {
     unix: function(query) {
       var isCorrectLength = query.split('').length === 10;
       var isIntegerSequence = query.split('')
-    				   .map((n) => { return parseInt(n); })
- 				   .map((n) => { return n.toString(); })
-				   .join('') === query;
+               .map((n) => { return parseInt(n); })
+           .map((n) => { return n.toString(); })
+           .join('') === query;
       return isCorrectLength && isIntegerSequence;
     },
     natLang: function(query) {
       var queryComponents = decodeURI(query).replace(',', ' ').split(' ').filter((e) => { return e.length !== 0; });
+      if (!queryComponents) { return null }
       var hasMonth = months.some((e) => { return e === queryComponents[0]; });
-      var hasDate = queryComponents[1].length === 2;
-      var hasYear = queryComponents[2].length === 4;
+      var hasDate = queryComponents[1] ? queryComponents[1].length === 2 : false;
+      var hasYear = queryComponents[2] ? queryComponents[2].length === 4 : false;
       return hasMonth && hasDate && hasYear;
     },
   };
@@ -39,6 +39,7 @@ app.get('/:query', function(req, res) {
     },
   };
 
+  console.log('query is: ' + query)
   if (dateCheck.unix(query)) {
     res.send(JSON.stringify({"unix": +query, "natural": parse.unixToNatLang(query)}));
   } else if(dateCheck.natLang(query)) {
