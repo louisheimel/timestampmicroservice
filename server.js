@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var path = require('path');
 
+// add a comment
 app.use('/', express.static(path.join(__dirname, 'public')));
 app.get('/',(req, res) => { res.redirect('/static/index.html'); });
 app.get('/:query', function(req, res) {
